@@ -1,0 +1,39 @@
+#!/bin/bash
+export SSHPASS='iut*'                                                   #the base password of the machine debian-1 is iut*
+pass=''
+
+setPassword() {
+  local pass1                                                           #Creating the variable pass1 to change the actual password
+  echo -n "Password of the machine debian-1 is now sae. " >&2
+  pass1="sae"
+  echo >&2
+  echo "$pass1"
+}
+# main
+if [ -z "$pass" ]; then 
+	pass=$(setPassword)                                                   #Put the new password in the variable pass
+fi
+# Take the public ssh key and put it in /root/.ssh/authorized_keys of debian-1
+sshpass -e ~vdn/vdn/bin/vdn-ssh-copy-id -i ~/.ssh/id_rsa.pub root@debian-1 &> /dev/null
+#Same thing for the user test
+sshpass -e ~vdn/vdn/bin/vdn-ssh-copy-id -i ~/.ssh/id_rsa.pub test@debian-1 &> /dev/null
+
+vdn-ssh root@debian-1 'echo "root:'$pass'" | chpasswd'                  #Connecting to the machine and changing the password for the new password.
+
+#With the last command done, you can now log into debian-1 without entering any password
+
+# Verification:
+
+SSHPASS="$pass"
+if ! sshpass -e vdn-ssh -n -o PubkeyAuthentication=no root@debian-1 ':'; then
+	echo "Fail !" >&2
+fi
+
+
+exit 0
+
+#Put the public key in ~test/.ssh/authorized_keys of debian-1
+
+vdn-ssh-copy -i ~/.ssh/id_rsa.pub test@debian-1
+
+echo "################ End of the configuration of the new password ################"
