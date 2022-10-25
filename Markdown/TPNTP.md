@@ -60,7 +60,7 @@ Vous pouvez aussi voir les clients connectés à votre propre serveur NTP avec :
 
 
 
-  ntpq -c mrulist
+      ntpq -c mrulist
 
 
 
